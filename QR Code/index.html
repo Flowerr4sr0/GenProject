@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    select, input, button {
+      margin: 5px 0;
+      padding: 6px;
+      width: 100%;
+    }
+    #qr {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Multi-Use QR Code Generator</h2>
+
+  <label for="type">Choose type:</label>
+  <select id="type" onchange="showInputs()">
+    <option value="link">Link (URL)</option>
+    <option value="email">Email</option>
+    <option value="phone">Phone Number</option>
+    <option value="wifi">Wi-Fi</option>
+    <option value="text">Plain Text</option>
+  </select>
+
+  <div id="inputs"></div>
+
+  <button onclick="generateQR()">Generate QR Code</button>
+
+  <div id="qr"></div>
+
+  <script>
+    function showInputs() {
+      const type = document.getElementById('type').value;
+      const inputs = document.getElementById('inputs');
+      inputs.innerHTML = '';
+
+      switch(type) {
+        case 'link':
+          inputs.innerHTML = '<input id="link" placeholder="https://example.com">';
+          break;
+        case 'email':
+          inputs.innerHTML = '<input id="email" placeholder="email@example.com">';
+          break;
+        case 'phone':
+          inputs.innerHTML = '<input id="phone" placeholder="+1234567890">';
+          break;
+        case 'wifi':
+          inputs.innerHTML = `
+            <input id="ssid" placeholder="Wi-Fi SSID">
+            <input id="pass" placeholder="Password">
+            <select id="enc">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">No Password</option>
+            </select>
+          `;
+          break;
+        case 'text':
+          inputs.innerHTML = '<input id="text" placeholder="Your message here">';
+          break;
+      }
+    }
+
+    function generateQR() {
+      const type = document.getElementById('type').value;
+      let data = '';
+
+      switch(type) {
+        case 'link':
+          data = document.getElementById('link').value.trim();
+          break;
+        case 'email':
+          const email = document.getElementById('email').value.trim();
+          data = `mailto:${email}`;
+          break;
+        case 'phone':
+          const phone = document.getElementById('phone').value.trim();
+          data = `tel:${phone}`;
+          break;
+        case 'wifi':
+          const ssid = document.getElementById('ssid').value;
+          const pass = document.getElementById('pass').value;
+          const enc = document.getElementById('enc').value;
+          data = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+          break;
+        case 'text':
+          data = document.getElementById('text').value;
+          break;
+      }
+
+      document.getElementById('qr').innerHTML = '';
+      new QRCode(document.getElementById('qr'), {
+        text: data,
+        width: 256,
+        height: 256
+      });
+    }
+
+    // Show default input on load
+    showInputs();
+  </script>
+
+</body>
+</html>
